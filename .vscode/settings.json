@@ -1,0 +1,4 @@
+{
+    "CodeGPT.apiKey": "CodeGPT Plus Beta",
+    "CodeGPT.Autocomplete.provider": "Ollama - codegpt/replit-code-v1_5-3b"
+}
