@@ -1,5 +1,6 @@
 // authOptions.ts
 import { NextAuthOptions, Session, User as NextAuthUser, DefaultSession } from 'next-auth';
+import GoogleProvider from 'next-auth/providers/google';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import { JWT } from 'next-auth/jwt';
 import connectToDatabase from './db';
@@ -42,10 +43,16 @@ function getEnvVar(name: string): string {
 }
 
 // Ensure environment variables are defined
+const googleClientId: string = getEnvVar('GOOGLE_CLIENT_ID');
+const googleClientSecret: string = getEnvVar('GOOGLE_CLIENT_SECRET');
 const nextAuthSecret: string = getEnvVar('NEXTAUTH_SECRET');
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    GoogleProvider({
+      clientId: googleClientId,
+      clientSecret: googleClientSecret,
+    }),
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
@@ -78,6 +85,7 @@ export const authOptions: NextAuthOptions = {
             id: user._id.toString(),
             name: user.username,
             email: user.email,
+          
             role: user.role || 'Visiteur', // Default to 'Visiteur' if no role is found
           } as NextAuthUser;
         } catch (error) {
@@ -101,6 +109,7 @@ export const authOptions: NextAuthOptions = {
           id: token.id as string,
           name: token.name as string,
           email: token.email as string,
+          
           role: token.role as 'Visiteur' | 'Consulter' | 'Admin' | 'SuperAdmin',
         };
       }
@@ -108,9 +117,11 @@ export const authOptions: NextAuthOptions = {
     },
     async jwt({ token, user }: { token: JWT; user?: NextAuthUser }) {
       if (user) {
-        const users = await UserModel.findOne({ email: user.email as string });
+        const users=await UserModel.findOne({ email: user.email as string })
+        
         token.id = user.id;
         token.role = users?.role;
+        
       }
       return token;
     },
@@ -124,9 +135,14 @@ export const authOptions: NextAuthOptions = {
             role: user.role,
             email: user.email as string,
             password: undefined,
+            
           }) as UserType;
           await newUser.save();
-        }
+        } /* else {
+          existingUser.username = user.name!;
+          existingUser.role = user.role;
+          await existingUser.save();
+        } */
         return true;
       } catch (error) {
         console.error('Error during sign-in:', error);
@@ -139,3 +155,4 @@ export const authOptions: NextAuthOptions = {
   },
   secret: nextAuthSecret,
 };
+
