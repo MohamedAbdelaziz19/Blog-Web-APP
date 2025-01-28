@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 const HeroSection: React.FC = () => {
   return (
-    <section className='centred py-8 flex items-center gap-8 sm:gap-8 md:gap-16 lg:gap-16 xl:gap-16 flex-col justify-center md:flex-row'>
+    <section className='bg-white centred py-8 flex items-center gap-8 sm:gap-8 md:gap-16 lg:gap-16 xl:gap-16 flex-col justify-center md:flex-row'>
         {/* Image Section */}
         
         <CldImage
